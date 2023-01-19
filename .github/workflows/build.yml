@@ -2,10 +2,22 @@ name: Build
 on: [push]
 jobs:
   macos:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      matrix:
+        job:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            use-cross: false
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build
-        run: swift build
+        run: |
+          swift build -c release --disable-sandbox
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          args: -c release --disable-sandbox --profile optimized --target aarch64-apple-darwin
+          tag_name: release
+          files: .build/release/dark-mode-notify
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
