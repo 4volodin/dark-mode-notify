@@ -1,0 +1,11 @@
+name: Build
+on: [push]
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: swift build
+        with:
+          args: -c release --disable-sandbox --profile optimized --target aarch64-apple-darwin
